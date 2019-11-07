@@ -152,6 +152,80 @@
           <div id="js-content" class="content-ll">
             
   
+    <article id="post-JSP笔记" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2019/11/07/JSP笔记/">JSP笔记</a>
+    </h1>
+  
+
+        
+        <a href="/2019/11/07/JSP笔记/" class="archive-article-date">
+  	<time datetime="2019-11-07T08:53:05.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-11-07</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>1.设置工作环境的编码格式：    首选行-&gt;work -&gt;utf-8<br>2.设置jsp文件的编码格式    :    首选行-&gt;JSP File -&gt;utf-8<br>3.设置请求的编码格式    request.setCharacterEncoding(“utf-8”);<br>4.设置响应的编码格式    response.setContentType(“text/html; charset=UTF-8”);<br>================================================================<br>jsp九大内置对象：<br>out</p>
+<p>request：请求对象放请求信息</p>
+<p>response：响应对象      放响应信息<br>提供的方法：<br>void addCookie( Cookie cookie );   服务端向客户端增加Cookie对象<br>void sendRedirect( String location )   throws IOException  : 页面跳转的一种方式<br>void setContentType(String type)：设置服务端响应的编码（设置服务端的conten）<br>示例：登陆<br>login.jsp-&gt;check.jsp-&gt;success.jsp<br>请求转发  ：  页面保留（地址栏不变），保留第一次请求时的数据，在服务端跳转<br>重定向  ： 页面跳转（地址栏不变），数据丢失，在客户端跳转<br>sessuib(服务端)<br>Cookie(客户端，不是内置对象)：Cookie时由服务端产生，再发送给客户端保存<br>相当于本地缓存的作用<br>作用：提高访问服务端的效率，但是安全性较差</p>
+<p>Cookie key=value<br>javax.servlet.http.Cookie<br>public Cookie(){String name,String value}<br>String getName()  :获取name<br>String getValue()  :获取value<br>void setMaxAge(int expiry):最大有效期  （秒）<br>服务端发送给客户端：<br>response.addCookie(Cookie cookie)<br>页面跳转（转发，重定向）<br>客户端获取cookie:      request.getCookie(Cookie cookie)<br>a.服务端增cookie:  response对象   客户端获取cookie：request对象<br>并且只能获取全部的cookie,不能获取单个cookie<br>session机制：客户端第一次请求服务端时，服务端会自动产生一个session对象（用于保存客户信息）；<br>并且每个session对象都会有一个唯一的sessionid（用于区分session）<br>服务端会产生一个cookie 并且改cookie中name=JSESSION,value=服务端sessionid的值；<br>然后服务端会再响应客户端的同时，复制sessionid的值发送给客户端，至此，客户端就有了一个cookie（JSESSION）<br>因此，客户端的cookie就和服务端的session一一对应（JSESSION=SESSIONID）<br>session的方法：<br>String getID()   ：获取sessionid<br>boolean isNew()  ：是否是第一次访问<br>void invalidate()   :  使session失效(推出登陆或注销)</p>
+<p>setAttribute()<br>getAttribute()</p>
+<p>void setMaxInactiveInterval(秒)   :   设置最大有效时间  非活动时间<br>int getMaxInactiveInterval()        ：  获取最大有效时间   非活动时间</p>
+<p>========================================================================================================<br>jdbc原理及使用statebase访问数据库<br>1.jdbc：Java DataBase Connectivity   可以为多种关系型数据库DBMS提供统一的访问方式<br>2.JDBC  API  主要功能：<br>三件事，具体是通过一下类/接口实现：<br>DriverManager  : 管理jdbc驱动<br>Connection  ：  连接（通过DriverManager产生）<br>Statement(PreparedStatement)   ：  增删改查（通过connection产生）<br>CallableStatement  ： 调用数据库中的  存储过程/存储函数（通过connection产生）<br>Result  ：  返回的结果集（上面的statement等产生）<br>next():光标下移,判断是否有吓一跳数据：ture/flase<br>getXxx(字段名/位置):获取具体的字段值</p>
+<p>Connection产生操作数据的对象：<br>Connection产生Statement对象：prepareStatement()<br>Connection产生PrepareStatement对象：PrepareStatement()<br>Connection产生CallableStatement对象：prepareCall()</p>
+<p>Statement操作数据库：<br>通过excuteUpdate(sql)增删改操作<br>通过excuteQuery(sql)查操作</p>
+<p>PrepareStatement操作数据库：<br>通过excuteUpdate(sql)增删改操作<br>通过excuteQuery(sql)查操作赋值操作setXxx()<br>eg：String sql=”insert into student values(?,?,?,?)”;<br>pstmt=connection.prepareStatement(sql);//预编译<br>pstmt.setInt(1,36);<br>pstmt.setString(2,”张三”);<br>pstmt.setInt(3,56);<br>pstmt.setString(4,”s3”);<br>int count=pstmt.excuteUpdate();</p>
+<p>推荐使用PrepareStatement,原因：1.编码更加简便，内容更加简洁<br>                               2.提高性能（因为有预编译操作）<br>                               3.安全（可以有效防止sql注入）<br>                                    stmt:存在被sql注入的风险<br>                                    pstmt：可以有效防止sql注入</p>
+<p>存储CLOB和BLOB类型文件<br>CLOB:通过Reader reader = rs.getCharacterStream(“字段名”);将clob类型的数据 保存到Reader对象中，将Reader通过Writer输出即可<br>BLOB:二进制  字节流   InputStream OutputStream  与CLOB步骤一致，区别：setBinaryStream(…);   getBinaryStream(…);<br>====================================<br>JSP访问数据库<br>    JavaBean   满足一下两点就可以称为JavaBean  1.public 修饰的类，无参构造   2.所有属性都是 private，并且提供set/get（如果是boolean 则get可以替换成is）<br>        就是将jsp中登陆操作代码，转移到LoginDao。java类中； 其中LoginDao.java类 就称为JavaBean。<br>        JavaBean的作用：a.减轻jsp复杂度  b.提高代码的复用（任何地方的登陆操作，都可以调用LoginDao实现）<br>=================================================<br>servlet<br>    servlet2.5  需要再web.xml中配置  <servlet><br>                                        <servlet-name>WelcomServlet</servlet-name><br>                                        <servlet-class>com.zzy.servlet.WelcomServlet</servlet-class><br>                                     </servlet><br>                                     <servlet-mapping><br>                                        <servlet-name>WelcomServlet</servlet-name><br>                                        <url-pattern>/WelcomServlet</url-pattern><br>                                     </servlet-mapping><br>    servlet3.0  不需要在web.xml中配置，中需要在servlet类的上方添加注解  @WebServlet(“/WelcomServlet”)<br>    servlet的生命周期：5个阶段<br>        加载<br>        初始化    init（）    该方法会在servlet被加载并实例化的以后  执行（只执行一次）<br>        服务    ：service()    -&gt;  doGet()    doPost()     触发一次执行一次/·<br>        销毁    :destroy()        servlet被系统回收时执行（关闭tomcat时执行）<br>        卸载<br>    servlet在加载时初始化和在停止时销毁  操作-&gt;    2.5：在web.xml中配置        <service><load-on-startup>1</load-on-startup></service><br>                                                3.0: 在servlet类上添加注解    @WebServlet(value=”/WelcomServlet”,loadOnStartup=1)<br>===============================================================<br>三层架构<br>    与MVC设计模式的目标一致：都是为了解耦合、提高代码复用；<br>    区别：二者对项目理解的角度不同。<br>三层组成：<br>    表示层（USL,User Show Layer;视图层 ）（表示前台的代码jsp,html,js,css；表示后台的代码servlet）<br>    业务逻辑层（BLL,Business Logic Layer;Service层）（逻辑，可拆）<br>    数据访问层（DAL,Data Access Layer）    （原子性，不可拆）<br>在java中拿到out对象：PrintWriter out = response.getWriter ();<br>            session: HttpSession session = request.getSession();<br>            application    :ServletContext application = request.getServletContext();<br>===================================<br>上传<br>    apache<br>        commons-fileupload.jar组件<br>        commons-fileupload.jar依赖 commons-io.jar<br>===================================================<br>    引入tablib：     &lt;%@ taglib uri=”<a href="http://java.sun.com/jsp/jstl/core&quot;" target="_blank" rel="noopener">http://java.sun.com/jsp/jstl/core&quot;</a> prefix=”c” %&gt;  其中prefix=”c” 是前缀<br>核心标签库：通用标签库   条件标签库   迭代标签库<br>    通用标签库：&lt;c:set&gt;复制<br>        在某个作用域中，可以给对象的某个属性复制，可以给变量复制，可以给map对象赋值，但不能给不存在的对象赋值。<br>    &lt;c:out&gt;显示<br>    &lt;c:out value=”requestScope.stu” default=”如果学生不存在，就显示default”&gt;    c:out  显示不存在的数据<br>    escapeXML=“true”  将地址原封不动展示出来            escapeXML=“false”    显示出超链接<br>    &lt;c:set var=”a” value=”b” scope=”request”/&gt;<br>    &lt;c:remove&gt;删除属性<br>    &lt;c:remove var=”a” scope=”request”/&gt;</p>
+
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+      
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2019/11/07/JSP笔记/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
     <article id="post-今天很完美" class="article article-type-post  article-index" itemscope itemprop="blogPost">
   <div class="article-inner">
     
